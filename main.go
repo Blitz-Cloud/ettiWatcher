@@ -70,6 +70,7 @@ func folderInit() []fs.DirEntry {
 }
 
 func main() {
+
 	//initializarea folderului pentru ziua de seminar
 	currentSeminarLocation := root + getSeminarLocation()
 	ensureFolderExists(currentSeminarLocation)

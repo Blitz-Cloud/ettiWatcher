@@ -26,7 +26,7 @@ add_executable(%s main.c)
 
 `
 var CMakeForCpp = `cmake_minimum_required(VERSION 3.29)
-project(%s CPP)
+project(%s)
 
 set(CMAKE_CXX_STANDARD 20)
 

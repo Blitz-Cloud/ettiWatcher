@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -55,6 +57,12 @@ func New(args []string) error {
 		err = os.WriteFile(filepath.Join(labLocation, "main"+extension), []byte(mainFile), 0766)
 		if err != nil {
 			return fmt.Errorf("%s", err)
+		}
+		fmt.Println(conf.Editor)
+		cmd := exec.Command(conf.Editor, labLocation)
+		err = cmd.Start()
+		if err != nil {
+			log.Fatal(err)
 		}
 		return nil
 

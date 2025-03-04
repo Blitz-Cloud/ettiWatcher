@@ -31,5 +31,19 @@ func initCommands() {
 		example: "semHelper new lab name or semHelper new blog name",
 		exec:    New,
 	}
-	RegisterCmd(incrementCmd, helpCmd, setCmd, newCmd)
+	generateMarkdownFromLabs := &Command{
+		name:    "generateMd",
+		short:   "",
+		long:    "",
+		example: "",
+		exec:    generateMd,
+	}
+	generateAiCompletionForLabs := &Command{
+		name:    "generateAi",
+		short:   "",
+		long:    "",
+		example: "",
+		exec:    func(s []string) error { return nil },
+	}
+	RegisterCmd(incrementCmd, helpCmd, setCmd, newCmd, generateMarkdownFromLabs, generateAiCompletionForLabs)
 }

@@ -31,7 +31,8 @@ func New(args []string) error {
 		if len(args) < 3 {
 			return fmt.Errorf("\tUSAGE: semHelper new lab c/cpp/c++ name")
 		}
-		dirName := fmt.Sprintf("%s-%d_%s_%d", strings.ReplaceAll(args[2], " ", "_"), time.Now().Day(), time.Now().Month().String()[:3], time.Now().Year())
+		// trebuie sa adaug supportul pentru ani
+		dirName := fmt.Sprintf("%s-%d-%d_%s_%d", strings.ReplaceAll(args[2], " ", "_"), conf.UnivYear*10+conf.Semester, time.Now().Day(), time.Now().Month().String()[:3], time.Now().Year())
 		labLocation := path.Join(conf.LabsLocation, dirName)
 		err := os.MkdirAll(labLocation, 0766)
 		if err != nil {
@@ -65,8 +66,8 @@ func New(args []string) error {
 			log.Fatal(err)
 		}
 		return nil
-
 	case "blog":
+		return fmt.Errorf("\tThis command isnt ready")
 	}
 
 	return nil

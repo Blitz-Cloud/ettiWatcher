@@ -22,7 +22,10 @@ func Increment(args []string) error {
 	case "semester":
 		conf.Semester++
 		err = conf.WriteConfigFile()
+	default:
+		return fmt.Errorf("\tThis is not a valid command")
 	}
+
 	if err != nil {
 		return fmt.Errorf("%s", err)
 	}

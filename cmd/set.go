@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -38,10 +38,6 @@ var setCmd = &cobra.Command{
 			cmd.Help()
 			return
 		}
-		spew.Dump(uniYear)
-		spew.Dump(viper.GetString("preferred_editor"))
-		spew.Dump(preferredEditor)
-		spew.Dump(labsLocation)
 
 		if uniYear != 0 {
 			viper.Set("uni-year", uniYear)
@@ -58,7 +54,10 @@ var setCmd = &cobra.Command{
 		if labsLocation != "DEFAULT" {
 			viper.Set("labs_location", labsLocation)
 		}
-		viper.WriteConfig()
+		err := viper.WriteConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 

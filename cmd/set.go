@@ -14,6 +14,7 @@ import (
 
 var uniYear int
 var semester int
+var subject string
 var preferredEditor string
 var labsLocation string
 
@@ -27,7 +28,7 @@ var setCmd = &cobra.Command{
 		2. Nu este implementat inca o incrementare automata a anului si semestrului de facultate 
 		3. Pentru a putea deschide editorul de text trebuie ca acesta sa se afle in PATH-ul sistemului sau al utilizatorului curent
 	Exemple de utilizare:
-	ettiWatcher set --year 1 --semester 1 --editor code --path /home/blitz-cloud/facultate/pclp2/labs`,
+	ettiWatcher set --year 1 --semester 1 --editor code --path /home/blitz-cloud/facultate/pclp2/labs --subject pclp1`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var isAtLeastAFlagSet bool = false
 		cmd.Flags().Visit(func(f *pflag.Flag) {
@@ -40,11 +41,15 @@ var setCmd = &cobra.Command{
 		}
 
 		if uniYear != 0 {
-			viper.Set("uni-year", uniYear)
+			viper.Set("uni_year", uniYear)
 		}
 
 		if semester != 0 {
 			viper.Set("semester", semester)
+		}
+
+		if subject != "" {
+			viper.Set("subject", subject)
 		}
 
 		if preferredEditor != "" {
@@ -67,6 +72,7 @@ func init() {
 	setCmd.Flags().IntVarP(&uniYear, "year", "y", 0, "Seteaza anul de studii")
 	setCmd.Flags().IntVarP(&semester, "semester", "s", 0, "Seteaza semesterul de studii")
 	setCmd.Flags().StringVarP(&preferredEditor, "editor", "e", "", "Seteaza editorul preferat de utilizator")
+	setCmd.Flags().StringVarP(&subject, "subject", "m", "", "Seteaza materia pentru care vor fi create proiectele")
 	setCmd.Flags().StringVarP(&labsLocation, "path", "p", "DEFAULT", "Seteaza locatia unde utilizatorul doreste sa salveze proiectele de laborator, daca nu este definita o locatie pentru laboratore atunci $HOME/facultate/labs va fi folosita pe post de locatie")
 
 	// Here you will define your flags and configuration settings.

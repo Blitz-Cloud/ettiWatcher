@@ -12,9 +12,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "semHelper",
+	Use:   "ettiWatcher",
 	Short: "Un tool CLI creat pentru a automatiza crearea mediului de dezvoltare pentru laboratoarele de la facultate si nu numai",
-	Long: `SemHelper este un cli conceput pentru a usura crearea mediului de dezvoltare necesar pentru laboratoarele de la facultate
+	Long: `EttiWatcher este un cli conceput pentru a usura crearea mediului de dezvoltare necesar pentru laboratoarele de la facultate
 	Acest CLI are mult mai multe capabilitati decat cele care sunt menite pentru studenti, deoarece acesta este o componenta complementara site-ului web https://ettih.blitzcloud.me`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -49,8 +49,9 @@ func initConfig() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	viper.SetDefault("uni-year", 0)
+	viper.SetDefault("uni_year", 0)
 	viper.SetDefault("semester", 0)
+	viper.SetDefault("subject", "pclp1")
 	viper.SetDefault("preferred_editor", "")
 	viper.SetDefault("labs_location", "DEFAULT")
 	// Here you will define your flags and configuration settings.

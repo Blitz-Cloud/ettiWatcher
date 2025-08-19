@@ -5,9 +5,19 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 
+	"github.com/blitz-cloud/ettiWatcher/templates"
+	"github.com/blitz-cloud/ettiWatcher/utils"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+var createOnlyDir bool = false
 
 // labCmd represents the lab command
 var labCmd = &cobra.Command{
@@ -23,7 +33,70 @@ var labCmd = &cobra.Command{
 	Exemple de utilizare:
 		semHelper new lab [c/cpp] [name] `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("lab called")
+		if len(args) != 2 {
+			fmt.Println("Aceasta comanda accepta doar 2 parametri.")
+			cmd.Help()
+			return
+		}
+		editor := viper.GetString("preferred_editor")
+		projectLang := args[0]
+		projectName := args[1]
+		// validez argumentele posibil sa fie necesara
+
+		if subject == "" {
+			subject = viper.GetString("subject")
+		}
+
+		// posibila solutie pentru a rezolva si blog
+		// mai jos legat de createOnlyDir
+		projectLocation := utils.CreateDirectory(projectName, subject)
+
+		if createOnlyDir {
+			// sa rulez functia care creeaza doar folderul
+			fmt.Printf("Pentru a accesa proiectul:\ncd %s", projectLocation)
+			return
+		}
+		// fisierele necesare pt proiect c/cpp cmake readme.md
+
+		cmakeFile := ""
+		mainFile := ""
+		extension := ""
+
+		switch projectLang {
+		case "c":
+			cmakeFile = fmt.Sprintf(templates.CMakeForC, projectName, projectName)
+			mainFile = templates.CTemplate
+			extension = ".c"
+		case "cpp":
+			fallthrough
+		case "c++":
+			cmakeFile = fmt.Sprintf(templates.CMakeForCpp, projectName, projectName)
+			mainFile = templates.CppTemplate
+			extension = ".cpp"
+		default:
+			log.Fatalf("%s nu este un limbaj supportat.\n Doar c si cpp sunt variante valide", projectLang)
+		}
+
+		err := os.WriteFile(filepath.Join(projectLocation, "CMakeLists.txt"), []byte(cmakeFile), 0766)
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
+		err = os.WriteFile(filepath.Join(projectLocation, "main"+extension), []byte(mainFile), 0766)
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
+		err = os.Chdir(projectLocation)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		spew.Dump(editor)
+		spew.Dump(projectLocation)
+		execEditor := exec.Command(editor, projectLocation)
+		err = execEditor.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
@@ -38,5 +111,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// labCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	labCmd.Flags().BoolVarP(&createOnlyDir, "createDirOnly", "d", false, "Flag optional care indica faptul ca doar folderul ar trebui creat")
+	labCmd.Flags().StringVarP(&subject, "subject", "m", "", "Flag optional care indica faptul ca ar trebui ca proiectul sa fie creat in folderul dat nu in cel prestabilit")
 }

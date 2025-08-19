@@ -32,7 +32,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(%s main.cpp)`
 
-var mdTempalte = `---
+var MDTemplate = `---
 title: %s
 date: %s
 description: %s

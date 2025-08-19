@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+func GenerateDateStandard() string {
+	return fmt.Sprintf("%d_%s_%d", time.Now().Day(), time.Now().Month().String()[:3], time.Now().Year())
+}
+
 func CreateDirectory(projectName, subject string) string {
 	// ar trebui sa fie capabil sa verifice daca exista deja proiectul daca da sa iasa o erroare
 	uniYear := viper.GetInt("uni_year")
@@ -22,7 +26,7 @@ func CreateDirectory(projectName, subject string) string {
 		labsLocation = fmt.Sprintf("%s%s", userHomeDir, "/facultate/labs")
 	}
 
-	projectDirectoryName := fmt.Sprintf("%s-%d-%d_%s_%d", projectName, uniYear*10+uniSemester, time.Now().Day(), time.Now().Month().String()[:3], time.Now().Year())
+	projectDirectoryName := fmt.Sprintf("%s-%d-%s", projectName, uniYear*10+uniSemester, GenerateDateStandard())
 	path := fmt.Sprintf("%s/%s/%s", labsLocation, subject, projectDirectoryName)
 	err := os.MkdirAll(path, 0766)
 	if err != nil {

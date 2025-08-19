@@ -12,7 +12,6 @@ import (
 
 	"github.com/blitz-cloud/ettiWatcher/templates"
 	"github.com/blitz-cloud/ettiWatcher/utils"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -39,6 +38,7 @@ var labCmd = &cobra.Command{
 			return
 		}
 		editor := viper.GetString("preferred_editor")
+		uniYearAndSemester := viper.GetInt("uni_year")*10 + viper.GetInt("semester")
 		projectLang := args[0]
 		projectName := args[1]
 		// validez argumentele posibil sa fie necesara
@@ -61,6 +61,7 @@ var labCmd = &cobra.Command{
 		cmakeFile := ""
 		mainFile := ""
 		extension := ""
+		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GenerateDateStandard(), "", uniYearAndSemester)
 
 		switch projectLang {
 		case "c":
@@ -85,13 +86,15 @@ var labCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
+		err = os.WriteFile(filepath.Join(projectLocation, "README.md"), []byte(readmeFile), 0766)
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
 		err = os.Chdir(projectLocation)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		spew.Dump(editor)
-		spew.Dump(projectLocation)
 		execEditor := exec.Command(editor, projectLocation)
 		err = execEditor.Start()
 		if err != nil {

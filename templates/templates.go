@@ -38,5 +38,7 @@ date: %s
 description: %s
 tags: []
 uniYearAndSemester: %d
----` + "```c" + "%s" + `%s
+---
+
+In acest fisier poti sa scrii detalii despre acest proiect/laborator si orice alte observatii, in cazul site ului acesta este fisierul folosit pentru ceea ce este afisat pe site
 `

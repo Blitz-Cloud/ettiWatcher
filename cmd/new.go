@@ -1,74 +1,39 @@
+/*
+Copyright © 2025 NAME HERE <EMAIL ADDRESS>
+*/
 package cmd
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"os/exec"
-	"path"
-	"path/filepath"
-	"strings"
-	"time"
-
-	"github.com/blitz-cloud/semHelper/config"
-	"github.com/blitz-cloud/semHelper/templates"
-	"github.com/davecgh/go-spew/spew"
+	"github.com/spf13/cobra"
 )
 
-func New(args []string) error {
-	if len(args) < 2 {
-		return fmt.Errorf("\tInvalid number of args\n\tUSAGE: semHelper new lab name or semHelper new blog name\n")
-	}
-	conf := config.ConfigFile{}
-	err := conf.ReadConfigFile()
-	if err != nil {
-		return fmt.Errorf("%s", err)
-	}
+// newCmd represents the new command
+var newCmd = &cobra.Command{
+	Use:   "new",
+	Short: "Acesta este comanda care este folostia pentru a creea noi laboratoare sau fisiere de documentatie",
+	Long: `Aceasta comanda accepta 2 parametri, lab sau blog. 
+	Fiecare dintre acestia sunt necesari pentru ca programul sa fie executat.
+	Exemple de utilizare:
+		1. Pentru a creea un laborator:
+				semHelper new lab [c/cpp] [name] 
 
-	switch args[0] {
-	case "lab":
-		spew.Dump(args)
-		if len(args) < 3 {
-			return fmt.Errorf("\tUSAGE: semHelper new lab c/cpp/c++ name")
-		}
-		// trebuie sa adaug supportul pentru ani
-		dirName := fmt.Sprintf("%s-%d-%d_%s_%d", strings.ReplaceAll(args[2], " ", "_"), conf.UnivYear*10+conf.Semester, time.Now().Day(), time.Now().Month().String()[:3], time.Now().Year())
-		labLocation := path.Join(conf.LabsLocation, dirName)
-		err := os.MkdirAll(labLocation, 0766)
-		if err != nil {
-			return fmt.Errorf("Dont be stupid this is probably not a valid path\n%s", err)
-		}
-		cmakeFile := ""
-		mainFile := ""
-		extension := ""
-		if args[1] == "c" {
-			cmakeFile = fmt.Sprintf(templates.CMakeForC, args[2], args[2])
-			mainFile = templates.CTemplate
-			extension = ".c"
-		} else if args[1] == "cpp" || args[1] == "c++" {
-			cmakeFile = fmt.Sprintf(templates.CMakeForCpp, args[2], args[2])
-			mainFile = templates.CppTemplate
-			extension = ".cpp"
-		}
+		2. Pentru a crea un fisier markdown:
+				semHelper new blog [name]`,
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+	},
+}
 
-		err = os.WriteFile(filepath.Join(labLocation, "CMakeLists.txt"), []byte(cmakeFile), 0766)
-		if err != nil {
-			return fmt.Errorf("%s", err)
-		}
-		err = os.WriteFile(filepath.Join(labLocation, "main"+extension), []byte(mainFile), 0766)
-		if err != nil {
-			return fmt.Errorf("%s", err)
-		}
-		fmt.Println(conf.Editor)
-		cmd := exec.Command(conf.Editor, labLocation)
-		err = cmd.Start()
-		if err != nil {
-			log.Fatal(err)
-		}
-		return nil
-	case "blog":
-		return fmt.Errorf("\tThis command isnt ready")
-	}
+func init() {
+	rootCmd.AddCommand(newCmd)
 
-	return nil
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// newCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// newCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

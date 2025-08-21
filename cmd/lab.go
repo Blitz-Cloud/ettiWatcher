@@ -16,8 +16,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var createOnlyDir bool = false
-
 // labCmd represents the lab command
 var labCmd = &cobra.Command{
 	Use:   "lab",
@@ -43,6 +41,18 @@ var labCmd = &cobra.Command{
 		projectName := args[1]
 		// validez argumentele posibil sa fie necesara
 
+		// incarcarea flags
+
+		createDirOnly, err := cmd.Flags().GetBool("createDirOnly")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		subject, err := cmd.Flags().GetString("subject")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		if subject == "" {
 			subject = viper.GetString("subject")
 		}
@@ -51,7 +61,7 @@ var labCmd = &cobra.Command{
 		// mai jos legat de createOnlyDir
 		projectLocation := utils.CreateDirectory(projectName, subject)
 
-		if createOnlyDir {
+		if createDirOnly {
 			// sa rulez functia care creeaza doar folderul
 			fmt.Printf("Pentru a accesa proiectul:\ncd %s", projectLocation)
 			return
@@ -78,7 +88,7 @@ var labCmd = &cobra.Command{
 			log.Fatalf("%s nu este un limbaj supportat.\n Doar c si cpp sunt variante valide", projectLang)
 		}
 
-		err := os.WriteFile(filepath.Join(projectLocation, "CMakeLists.txt"), []byte(cmakeFile), 0766)
+		err = os.WriteFile(filepath.Join(projectLocation, "CMakeLists.txt"), []byte(cmakeFile), 0766)
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
@@ -106,14 +116,6 @@ var labCmd = &cobra.Command{
 func init() {
 	newCmd.AddCommand(labCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// labCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	labCmd.Flags().BoolVarP(&createOnlyDir, "createDirOnly", "d", false, "Flag optional care indica faptul ca doar folderul ar trebui creat")
-	labCmd.Flags().StringVarP(&subject, "subject", "m", "", "Flag optional care indica faptul ca ar trebui ca proiectul sa fie creat in folderul dat nu in cel prestabilit")
+	labCmd.Flags().BoolP("createDirOnly", "d", false, "Flag optional care indica faptul ca doar folderul ar trebui creat")
+	labCmd.Flags().String("subject", "", "Flag optional care indica faptul ca ar trebui ca proiectul sa fie creat in folderul dat nu in cel prestabilit")
 }

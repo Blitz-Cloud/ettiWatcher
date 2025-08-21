@@ -12,12 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var uniYear int
-var semester int
-var subject string
-var preferredEditor string
-var labsLocation string
-
 // setCmd represents the set command
 var setCmd = &cobra.Command{
 	Use:   "set",
@@ -30,7 +24,14 @@ var setCmd = &cobra.Command{
 	Exemple de utilizare:
 	ettiWatcher set --year 1 --semester 1 --editor code --path /home/blitz-cloud/facultate/pclp2/labs --subject pclp1`,
 	Run: func(cmd *cobra.Command, args []string) {
+		uniYear, _ := cmd.Flags().GetInt("year")
+		semester, _ := cmd.Flags().GetInt("semester")
+		subject, _ := cmd.Flags().GetString("subject")
+		preferredEditor, _ := cmd.Flags().GetString("editor")
+		labsLocation, _ := cmd.Flags().GetString("path")
+
 		var isAtLeastAFlagSet bool = false
+
 		cmd.Flags().Visit(func(f *pflag.Flag) {
 			isAtLeastAFlagSet = true
 		})
@@ -69,11 +70,11 @@ var setCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(setCmd)
 
-	setCmd.Flags().IntVarP(&uniYear, "year", "y", 0, "Seteaza anul de studii")
-	setCmd.Flags().IntVarP(&semester, "semester", "s", 0, "Seteaza semesterul de studii")
-	setCmd.Flags().StringVarP(&preferredEditor, "editor", "e", "", "Seteaza editorul preferat de utilizator")
-	setCmd.Flags().StringVarP(&subject, "subject", "m", "", "Seteaza materia pentru care vor fi create proiectele")
-	setCmd.Flags().StringVarP(&labsLocation, "path", "p", "DEFAULT", "Seteaza locatia unde utilizatorul doreste sa salveze proiectele de laborator, daca nu este definita o locatie pentru laboratore atunci $HOME/facultate/labs va fi folosita pe post de locatie")
+	setCmd.Flags().IntP("year", "y", 0, "Seteaza anul de studii")
+	setCmd.Flags().IntP("semester", "s", 0, "Seteaza semesterul de studii")
+	setCmd.Flags().StringP("editor", "e", "", "Seteaza editorul preferat de utilizator")
+	setCmd.Flags().String("subject", "", "Seteaza materia pentru care vor fi create proiectele")
+	setCmd.Flags().StringP("path", "p", "DEFAULT", "Seteaza locatia unde utilizatorul doreste sa salveze proiectele de laborator, daca nu este definita o locatie pentru laboratore atunci $HOME/facultate/labs va fi folosita pe post de locatie")
 
 	// Here you will define your flags and configuration settings.
 

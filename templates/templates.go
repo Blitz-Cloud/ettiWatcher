@@ -35,6 +35,7 @@ add_executable(%s main.cpp)`
 var MDTemplate = `---
 title: %s
 date: %s
+subject: %s
 description: %s
 tags: []
 uniYearAndSemester: %d

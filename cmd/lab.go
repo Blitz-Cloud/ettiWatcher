@@ -71,7 +71,7 @@ var labCmd = &cobra.Command{
 		cmakeFile := ""
 		mainFile := ""
 		extension := ""
-		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GenerateDateStandard(), "", uniYearAndSemester)
+		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GenerateDateStandard(), subject, "", uniYearAndSemester)
 
 		switch projectLang {
 		case "c":

@@ -16,12 +16,6 @@ type FrontmatterMetaData struct {
 	UniYearAndSemester int      `yaml:"uniYearAndSemester"`
 }
 
-// func (project FrontmatterMetaData) FilterValue() string { return project.Title }
-
-// func (project FrontmatterMetaData) Title() string { return project.Title }
-
-// func (project FrontmatterMetaData) FilterValue() string { return project.Title }
-
 func ParseMdString(data string) (FrontmatterMetaData, string) {
 	var frontmatterData FrontmatterMetaData
 	mdContent, err := frontmatter.Parse(strings.NewReader(data), &frontmatterData)

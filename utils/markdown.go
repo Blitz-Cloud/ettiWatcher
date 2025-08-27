@@ -8,12 +8,12 @@ import (
 )
 
 type FrontmatterMetaData struct {
-	Title              string   "yaml:'title'"
-	Date               string   "yaml:'date'"
-	Subject            string   "yaml:'subject'"
-	Description        string   "yaml:'description'"
-	Tags               []string "yaml:'tags'"
-	UniYearAndSemester int      "yaml:'uniYearAndSemester'"
+	Title              string   `yaml:"title"`
+	Date               string   `yaml:"date"`
+	Subject            string   `yaml:"subject"`
+	Description        string   `yaml:"description"`
+	Tags               []string `yaml:"tags"`
+	UniYearAndSemester int      `yaml:"uniYearAndSemester"`
 }
 
 // func (project FrontmatterMetaData) FilterValue() string { return project.Title }

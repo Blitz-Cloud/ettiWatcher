@@ -20,6 +20,7 @@ var listCmd = &cobra.Command{
 	Long: `
 	Exemplu de utilizare: ettiWatcher list --open --all -m`,
 	Run: func(cmd *cobra.Command, args []string) {
+
 		curentSubject := viper.GetString("subject")
 		subjectsF, _ := cmd.Flags().GetBool("subjects")
 		subjectF, _ := cmd.Flags().GetString("subject")
@@ -79,7 +80,6 @@ var listCmd = &cobra.Command{
 			}
 
 			if openTui {
-
 				items := make([]list.Item, 0)
 				for _, project := range projectsMetaData {
 					items = append(items, utils.Item{
@@ -103,13 +103,25 @@ var listCmd = &cobra.Command{
 		}
 
 		projectsMetaData := utils.GetProjectsMetadata(curentSubject)
-		fmt.Println("Lista tuturor proiectelor")
-		for i, project := range projectsMetaData {
-			fmt.Printf("%d.", i+1)
-			fmt.Printf("\tNume: %s\n", project.Title)
-			fmt.Printf("\tCreat la: %s\n", project.Date)
-			fmt.Printf("\tMateria: %s\n", project.Subject)
-			fmt.Printf("\tDescrierea proiectului: %s\n\n", project.Description)
+		if openTui {
+			items := make([]list.Item, 0)
+			for _, project := range projectsMetaData {
+				items = append(items, utils.Item{
+					Metadata: project,
+				})
+			}
+			utils.RUNTUI(items, "Toate proiectele")
+
+		} else {
+
+			fmt.Println("Lista tuturor proiectelor")
+			for i, project := range projectsMetaData {
+				fmt.Printf("%d.", i+1)
+				fmt.Printf("\tNume: %s\n", project.Title)
+				fmt.Printf("\tCreat la: %s\n", project.Date)
+				fmt.Printf("\tMateria: %s\n", project.Subject)
+				fmt.Printf("\tDescrierea proiectului: %s\n\n", project.Description)
+			}
 		}
 	},
 }

@@ -3,10 +3,12 @@ package utils
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/spf13/viper"
 )
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
@@ -33,9 +35,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
+		if msg.String() == "enter" {
+			i := m.list.SelectedItem().(Item)
+			labsLocation := GetLabsLocation()
+			preferredEditor := viper.GetString("preferred_editor")
+			labLocation := fmt.Sprintf("%s/%s/%s-%d-%s", labsLocation, i.Metadata.Subject, i.Metadata.Title, i.Metadata.UniYearAndSemester, i.Metadata.Date)
+			args := []string{labLocation}
+			cmd := exec.Command(preferredEditor, args...)
+			cmd.Run()
+
+			return m, tea.Quit
+		}
+
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
+
 	}
 
 	var cmd tea.Cmd

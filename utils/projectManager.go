@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Blitz-Cloud/ettiHelper/types"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/viper"
 )
 
@@ -63,7 +62,6 @@ func GetProjectsMetadata(subject string) []FrontmatterMetaData {
 }
 
 func GetProjectData(path string) types.Lab {
-	spew.Dump(path)
 	readme, err := os.ReadFile(filepath.Join(path, "README.md"))
 	if err != nil {
 		log.Fatal(err)

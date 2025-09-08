@@ -11,8 +11,8 @@ func AddToSyncQueue(path string) {
 
 func GetSyncServerURL() string {
 	if viper.GetString("env") == "prod" {
-		return "https://ettih.blitzcloud.me/api/admin/post"
+		return "https://ettih.blitzcloud.me/api/admin"
 	} else {
-		return "http://localhost:3000/api/admin/post"
+		return "http://localhost:3000/api/admin"
 	}
 }

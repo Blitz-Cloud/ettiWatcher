@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/blitz-cloud/ettiWatcher/utils"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -29,9 +29,9 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		queueToSync := viper.GetStringSlice("unsynced")
-		spew.Dump(queueToSync)
 		fmt.Printf("Sync started\nData to sync: %d", len(queueToSync))
-		for _, path := range queueToSync {
+		var unsyncedBecauseError []string
+		for index, path := range queueToSync {
 			data := utils.GetProjectData(path)
 			jsonBody, err := json.Marshal(data)
 			if err != nil {
@@ -46,13 +46,40 @@ to quickly create a Cobra application.`,
 				contentType = "blog"
 			}
 
-			_, err = http.Post(utils.GetSyncServerURL()+"/"+contentType, "application/json", bytes.NewReader(jsonBody))
+			client := &http.Client{}
+			req, err := http.NewRequest("POST", utils.GetSyncServerURL()+"/post/"+contentType, bytes.NewReader(jsonBody))
 			if err != nil {
 				log.Println(err)
 			}
-			// spew.Dump(resp)
-			// sa modific datele de pe server si sa umblu sa syncQueue
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("admin_token")))
+			req.Header.Add("Content-Type", "application/json")
+			_, err = client.Do(req)
+
+			if err != nil {
+				log.Println(err)
+				unsyncedBecauseError = append(unsyncedBecauseError, queueToSync[index])
+			}
 		}
+
+		if len(unsyncedBecauseError) == 0 {
+			client := &http.Client{}
+			req, err := http.NewRequest("POST", utils.GetSyncServerURL()+"/last-sync", nil)
+			if err != nil {
+				log.Println(err)
+			}
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("admin_token")))
+			_, err = client.Do(req)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		viper.Set("unsynced", unsyncedBecauseError)
+		err := viper.WriteConfig()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		os.Exit(0)
 	},
 }
 

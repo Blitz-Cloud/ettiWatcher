@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"github.com/blitz-cloud/ettiWatcher/templates"
 	"github.com/blitz-cloud/ettiWatcher/utils"
@@ -71,7 +72,7 @@ var labCmd = &cobra.Command{
 		cmakeFile := ""
 		mainFile := ""
 		extension := ""
-		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GenerateDateStandard(), subject, "", uniYearAndSemester)
+		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GetRFC3339Time(time.Now()), subject, "", uniYearAndSemester)
 
 		switch projectLang {
 		case "c":
@@ -104,6 +105,8 @@ var labCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		utils.AddToSyncQueue(projectLocation)
 
 		execEditor := exec.Command(editor, projectLocation)
 		err = execEditor.Start()

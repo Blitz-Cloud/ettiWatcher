@@ -3,24 +3,27 @@ package utils
 import (
 	"log"
 	"strings"
+	"time"
 
 	"github.com/adrg/frontmatter"
 )
 
 type FrontmatterMetaData struct {
-	Title              string   `yaml:"title"`
-	Date               string   `yaml:"date"`
-	Subject            string   `yaml:"subject"`
-	Description        string   `yaml:"description"`
-	Tags               []string `yaml:"tags"`
-	UniYearAndSemester int      `yaml:"uniYearAndSemester"`
+	Title              string     `yaml:"title"`
+	Description        string     `yaml:"description"`
+	Date               *time.Time `yaml:"date"`
+	Tags               []string   `yaml:"tags"`
+	Subject            string     `yaml:"subject"`
+	UniYearAndSemester int        `yaml:"uniYearAndSemester"`
 }
 
 func ParseMdString(data string) (FrontmatterMetaData, string) {
 	var frontmatterData FrontmatterMetaData
 	mdContent, err := frontmatter.Parse(strings.NewReader(data), &frontmatterData)
 	if err != nil {
-		log.Println(err)
+		log.Println("Parser")
+		log.Fatal(err)
+
 	}
 	return frontmatterData, string(mdContent)
 }

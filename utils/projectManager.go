@@ -4,13 +4,21 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
+	"github.com/Blitz-Cloud/ettiHelper/types"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/viper"
 )
 
-func GenerateDateStandard() string {
-	return fmt.Sprintf("%d_%s_%d", time.Now().Day(), time.Now().Month().String()[:3], time.Now().Year())
+func GetPrettyDate(refTime time.Time) string {
+
+	return fmt.Sprintf("%02d_%s_%d", refTime.Day(), refTime.Month().String()[:3], refTime.Year())
+}
+
+func GetRFC3339Time(refTime time.Time) string {
+	return refTime.UTC().Local().Format(time.RFC3339)
 }
 
 func GetLabsLocation() string {
@@ -54,12 +62,47 @@ func GetProjectsMetadata(subject string) []FrontmatterMetaData {
 	return projectsMetadataList
 }
 
+func GetProjectData(path string) types.Lab {
+	spew.Dump(path)
+	readme, err := os.ReadFile(filepath.Join(path, "README.md"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	programFile := []byte("")
+	if _, err := os.Stat(filepath.Join(path, "main.cpp")); err == nil {
+		programFile, err = os.ReadFile(filepath.Join(path, "main.cpp"))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if _, err := os.Stat(filepath.Join(path, "main.c")); err == nil {
+		programFile, err = os.ReadFile(filepath.Join(path, "main.c"))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	metadata, content := ParseMdString(string(readme))
+	content = fmt.Sprintf("%s\n\n Codul sursa:\n```cpp%s\n```", content, string(programFile))
+	data := types.Lab{
+		Title:              metadata.Title,
+		Description:        metadata.Description,
+		Date:               metadata.Date,
+		Tags:               "",
+		Subject:            metadata.Subject,
+		UniYearAndSemester: uint(metadata.UniYearAndSemester),
+		Content:            content,
+	}
+	return data
+}
+
 func CreateDirectory(projectName, subject string) string {
 	// ar trebui sa fie capabil sa verifice daca exista deja proiectul daca da sa iasa o erroare
 	uniYear := viper.GetInt("uni_year")
 	uniSemester := viper.GetInt("semester")
 	labsLocation := GetLabsLocation()
-	projectDirectoryName := fmt.Sprintf("%s-%d-%s", projectName, uniYear*10+uniSemester, GenerateDateStandard())
+	projectDirectoryName := fmt.Sprintf("%s-%d-%s", projectName, uniYear*10+uniSemester, GetPrettyDate(time.Now()))
 	path := fmt.Sprintf("%s/%s/%s", labsLocation, subject, projectDirectoryName)
 	err := os.MkdirAll(path, 0766)
 	if err != nil {

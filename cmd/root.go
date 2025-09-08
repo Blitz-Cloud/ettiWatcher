@@ -54,6 +54,10 @@ func init() {
 	viper.SetDefault("subject", "pclp1")
 	viper.SetDefault("preferred_editor", "")
 	viper.SetDefault("labs_location", "DEFAULT")
+	viper.SetDefault("is_admin", false)
+	viper.SetDefault("admin_token", "")
+	viper.SetDefault("unsynced", []string{})
+	viper.SetDefault("env", "prod")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.

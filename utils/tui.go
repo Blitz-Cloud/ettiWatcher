@@ -39,7 +39,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			i := m.list.SelectedItem().(Item)
 			labsLocation := GetLabsLocation()
 			preferredEditor := viper.GetString("preferred_editor")
-			labLocation := fmt.Sprintf("%s/%s/%s-%d-%s", labsLocation, i.Metadata.Subject, i.Metadata.Title, i.Metadata.UniYearAndSemester, i.Metadata.Date)
+			labLocation := fmt.Sprintf("%s/%s/%s-%d-%s", labsLocation, i.Metadata.Subject, i.Metadata.Title, i.Metadata.UniYearAndSemester, GetPrettyDate(*i.Metadata.Date))
 			args := []string{labLocation}
 			cmd := exec.Command(preferredEditor, args...)
 			cmd.Run()

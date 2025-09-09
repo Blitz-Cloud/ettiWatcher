@@ -1,6 +1,12 @@
 package utils
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/spf13/viper"
+)
 
 func AddToSyncQueue(path string) {
 	currentUnsynced := viper.GetStringSlice("unsynced")
@@ -15,4 +21,16 @@ func GetSyncServerURL() string {
 	} else {
 		return "http://localhost:3000/api/admin"
 	}
+}
+
+func UpdateSyncTimeStamp() error {
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", GetSyncServerURL()+"/last-sync", nil)
+	if err != nil {
+		log.Println(err)
+	}
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("admin_token")))
+	_, err = client.Do(req)
+	return err
 }

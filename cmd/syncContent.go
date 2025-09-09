@@ -31,12 +31,25 @@ to quickly create a Cobra application.`,
 		queueToSync := viper.GetStringSlice("unsynced")
 		fmt.Printf("Sync started\nData to sync: %d", len(queueToSync))
 		var unsyncedBecauseError []string
+
+		if viper.GetBool("sync_server_error") && len(queueToSync) == 0 {
+			err := utils.UpdateSyncTimeStamp()
+			if err != nil {
+				fmt.Println("Nu s a putut realiza setarea datei curente pe server")
+				viper.Set("sync_server_error", true)
+				viper.WriteConfig()
+			}
+			os.Exit(1)
+		}
+
 		for index, path := range queueToSync {
 			data := utils.GetProjectData(path)
 			jsonBody, err := json.Marshal(data)
+
 			if err != nil {
 				log.Println(err)
 			}
+
 			jsonBody = []byte(jsonBody)
 
 			var contentType string
@@ -62,15 +75,11 @@ to quickly create a Cobra application.`,
 		}
 
 		if len(unsyncedBecauseError) == 0 {
-			client := &http.Client{}
-			req, err := http.NewRequest("POST", utils.GetSyncServerURL()+"/last-sync", nil)
+			err := utils.UpdateSyncTimeStamp()
 			if err != nil {
-				log.Println(err)
-			}
-			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("admin_token")))
-			_, err = client.Do(req)
-			if err != nil {
-				log.Println(err)
+				fmt.Println("Nu s a putut realiza setarea datei curente pe server")
+				viper.Set("sync_server_error", true)
+				viper.WriteConfig()
 			}
 		}
 		viper.Set("unsynced", unsyncedBecauseError)

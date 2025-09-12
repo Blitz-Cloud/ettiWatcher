@@ -53,7 +53,7 @@ to quickly create a Cobra application.`,
 			jsonBody = []byte(jsonBody)
 
 			var contentType string
-			if strings.Contains(path, "lab") {
+			if strings.Contains(path, "labs") {
 				contentType = "lab"
 			} else if strings.Contains(path, "blog") {
 				contentType = "blog"

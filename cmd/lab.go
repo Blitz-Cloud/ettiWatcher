@@ -60,7 +60,7 @@ var labCmd = &cobra.Command{
 
 		// posibila solutie pentru a rezolva si blog
 		// mai jos legat de createOnlyDir
-		projectLocation := utils.CreateDirectory(projectName, subject)
+		projectLocation := utils.CreateDirectory(projectName, subject, "lab")
 
 		if createDirOnly {
 			// sa rulez functia care creeaza doar folderul

@@ -74,7 +74,7 @@ var listCmd = &cobra.Command{
 
 		if showAllSubjectsF {
 			subjects := utils.GetSubjects()
-			projectsMetaData := make([]utils.FrontmatterMetaData, 0)
+			projectsMetaData := make([]utils.FrontmatterMetaDataType, 0)
 			for _, subject := range subjects {
 				projectsMetaData = append(projectsMetaData, utils.GetProjectsMetadata(subject)...)
 			}

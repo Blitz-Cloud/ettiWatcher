@@ -59,6 +59,7 @@ func init() {
 	viper.SetDefault("unsynced", []string{})
 	viper.SetDefault("env", "prod")
 	viper.SetDefault("sync_server_error", false)
+	viper.SetDefault("git_enabled", false)
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.

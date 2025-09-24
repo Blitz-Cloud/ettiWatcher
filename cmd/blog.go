@@ -5,13 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"time"
 
-	"github.com/blitz-cloud/ettiWatcher/templates"
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,55 +28,29 @@ to quickly create a Cobra application.`,
 			cmd.Help()
 			return
 		}
-		editor := viper.GetString("preferred_editor")
 		uniYearAndSemester := viper.GetInt("uni_year")*10 + viper.GetInt("semester")
 		projectName := args[0]
-		// validez argumentele posibil sa fie necesara
 
-		// incarcarea flags
-
-		subject, err := cmd.Flags().GetString("subject")
-		if err != nil {
-			log.Fatal(err)
+		newProject := utils.ProjectMetadataType{
+			FrontmatterMetaDataType: utils.FrontmatterMetaDataType{
+				Title:              projectName,
+				UniYearAndSemester: uniYearAndSemester,
+				Subject:            "blog",
+			},
+			Lang:       "",
+			DirOnly:    false,
+			OpenEditor: true,
+			GitEnable:  true,
 		}
-
-		if subject == "" {
-			subject = viper.GetString("subject")
-		}
-
-		// posibila solutie pentru a rezolva si blog
-		// mai jos legat de createOnlyDir
-		projectLocation := utils.CreateDirectory(projectName, subject, "blog")
-
-		// fisierele necesare pt proiect c/cpp cmake readme.md
-
-		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GetRFC3339Time(time.Now()), "blog", "", uniYearAndSemester)
-
-		err = os.WriteFile(filepath.Join(projectLocation, "README.md"), []byte(readmeFile), 0766)
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
-		err = os.Chdir(projectLocation)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		utils.AddToSyncQueue(projectLocation)
-
-		execEditor := exec.Command(editor, projectLocation)
-		err = execEditor.Start()
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		utils.CreateProject(newProject)
 	},
 }
 
 func init() {
 	newCmd.AddCommand(blogCmd)
 
-	blogCmd.Flags().BoolP("createDirOnly", "d", false, "Flag optional care indica faptul ca doar folderul ar trebui creat")
-	blogCmd.Flags().String("subject", "", "Flag optional care indica faptul ca ar trebui ca proiectul sa fie creat in folderul dat nu in cel prestabilit")
+	// blogCmd.Flags().BoolP("createDirOnly", "d", false, "Flag optional care indica faptul ca doar folderul ar trebui creat")
+	// blogCmd.Flags().String("subject", "", "Flag optional care indica faptul ca ar trebui ca proiectul sa fie creat in folderul dat nu in cel prestabilit")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

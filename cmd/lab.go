@@ -6,12 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"time"
 
-	"github.com/blitz-cloud/ettiWatcher/templates"
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -36,7 +31,7 @@ var labCmd = &cobra.Command{
 			cmd.Help()
 			return
 		}
-		editor := viper.GetString("preferred_editor")
+		// editor := viper.GetString("preferred_editor")
 		uniYearAndSemester := viper.GetInt("uni_year")*10 + viper.GetInt("semester")
 		projectLang := args[0]
 		projectName := args[1]
@@ -57,62 +52,18 @@ var labCmd = &cobra.Command{
 		if subject == "" {
 			subject = viper.GetString("subject")
 		}
-
-		// posibila solutie pentru a rezolva si blog
-		// mai jos legat de createOnlyDir
-		projectLocation := utils.CreateDirectory(projectName, subject, "lab")
-
-		if createDirOnly {
-			// sa rulez functia care creeaza doar folderul
-			fmt.Printf("Pentru a accesa proiectul:\ncd %s", projectLocation)
-			return
+		newProject := utils.ProjectMetadataType{
+			FrontmatterMetaDataType: utils.FrontmatterMetaDataType{
+				Title:              projectName,
+				UniYearAndSemester: uniYearAndSemester,
+				Subject:            subject,
+			},
+			Lang:       projectLang,
+			DirOnly:    createDirOnly,
+			OpenEditor: true,
+			GitEnable:  true,
 		}
-		// fisierele necesare pt proiect c/cpp cmake readme.md
-
-		cmakeFile := ""
-		mainFile := ""
-		extension := ""
-		readmeFile := fmt.Sprintf(templates.MDTemplate, projectName, utils.GetRFC3339Time(time.Now()), subject, "", uniYearAndSemester)
-
-		switch projectLang {
-		case "c":
-			cmakeFile = fmt.Sprintf(templates.CMakeForC, projectName, projectName)
-			mainFile = templates.CTemplate
-			extension = ".c"
-		case "cpp":
-			fallthrough
-		case "c++":
-			cmakeFile = fmt.Sprintf(templates.CMakeForCpp, projectName, projectName)
-			mainFile = templates.CppTemplate
-			extension = ".cpp"
-		default:
-			log.Fatalf("%s nu este un limbaj supportat.\n Doar c si cpp sunt variante valide", projectLang)
-		}
-
-		err = os.WriteFile(filepath.Join(projectLocation, "CMakeLists.txt"), []byte(cmakeFile), 0766)
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
-		err = os.WriteFile(filepath.Join(projectLocation, "main"+extension), []byte(mainFile), 0766)
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
-		err = os.WriteFile(filepath.Join(projectLocation, "README.md"), []byte(readmeFile), 0766)
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
-		err = os.Chdir(projectLocation)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		utils.AddToSyncQueue(projectLocation)
-
-		execEditor := exec.Command(editor, projectLocation)
-		err = execEditor.Start()
-		if err != nil {
-			log.Fatal(err)
-		}
+		utils.CreateProject(newProject)
 	},
 }
 

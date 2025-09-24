@@ -8,7 +8,7 @@ import (
 	"github.com/adrg/frontmatter"
 )
 
-type FrontmatterMetaData struct {
+type FrontmatterMetaDataType struct {
 	Title              string     `yaml:"title"`
 	Description        string     `yaml:"description"`
 	Date               *time.Time `yaml:"date"`
@@ -17,8 +17,8 @@ type FrontmatterMetaData struct {
 	UniYearAndSemester int        `yaml:"uniYearAndSemester"`
 }
 
-func ParseMdString(data string) (FrontmatterMetaData, string) {
-	var frontmatterData FrontmatterMetaData
+func ParseMdString(data string) (FrontmatterMetaDataType, string) {
+	var frontmatterData FrontmatterMetaDataType
 	mdContent, err := frontmatter.Parse(strings.NewReader(data), &frontmatterData)
 	if err != nil {
 		log.Println("Parser")

@@ -14,7 +14,7 @@ import (
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type Item struct {
-	Metadata FrontmatterMetaData
+	Metadata FrontmatterMetaDataType
 }
 
 func (i Item) Title() string       { return i.Metadata.Title }

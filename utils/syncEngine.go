@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/spf13/viper"
 )
 
@@ -33,4 +35,19 @@ func UpdateSyncTimeStamp() error {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("admin_token")))
 	_, err = client.Do(req)
 	return err
+}
+
+func CloneRepo(path string, URL string) {
+	err := os.MkdirAll(path, 0766)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = git.PlainClone(path, false, &git.CloneOptions{
+		URL:               URL,
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

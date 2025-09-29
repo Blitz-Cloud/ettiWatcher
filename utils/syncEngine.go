@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/spf13/viper"
@@ -38,16 +39,19 @@ func UpdateSyncTimeStamp() error {
 }
 
 func CloneRepo(path string, URL string) {
-	err := os.MkdirAll(path, 0766)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = git.PlainClone(path, false, &git.CloneOptions{
-		URL:               URL,
-		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
-	})
-	if err != nil {
-		log.Fatal(err)
+	if _, err := os.Stat(filepath.Join(path, ".git")); os.IsNotExist(err) {
+
+		err := os.MkdirAll(path, 0766)
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = git.PlainClone(path, false, &git.CloneOptions{
+			URL:               URL,
+			RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 }

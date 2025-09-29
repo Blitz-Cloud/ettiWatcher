@@ -8,8 +8,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/blitz-cloud/ettiWatcher/utils"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,13 +33,20 @@ to quickly create a Cobra application.`,
 		gitURL := args[0]
 		lab := args[1]
 		//https://github.com/Blitz-Cloud/ettiContent{.git}/[subject]/[title]-[uniYearAndSemester]-[date]
-		if _, err := os.Stat(filepath.Join(utils.GetLabsLocation(), "remote")); os.IsNotExist(err) {
-			err = os.MkdirAll(filepath.Join(utils.GetLabsLocation(), "remote"), 0766)
+		if gitURL[len(gitURL)-1] != '/' {
+			gitURL = gitURL + "/"
 		}
-		utils.CloneRepo(filepath.Join(utils.GetLabsLocation(), "remote"), gitURL)
+		gitUrlSplit := strings.Split(gitURL, "/")
+		spew.Dump(gitUrlSplit)
+		repoName := gitUrlSplit[len(gitUrlSplit)-3] + "_" + gitUrlSplit[len(gitUrlSplit)-2]
+		if _, err := os.Stat(filepath.Join(utils.GetLabsLocation(), repoName)); os.IsNotExist(err) {
+			os.MkdirAll(filepath.Join(utils.GetLabsLocation(), repoName), 0766)
+		}
+
+		utils.CloneRepo(filepath.Join(utils.GetLabsLocation(), repoName), gitURL)
 
 		editor := viper.GetString("preferred_editor")
-		execEditor := exec.Command(editor, filepath.Join(utils.GetLabsLocation(), "remote", lab))
+		execEditor := exec.Command(editor, filepath.Join(utils.GetLabsLocation(), repoName, lab))
 		err := execEditor.Start()
 		if err != nil {
 			log.Fatal(err)

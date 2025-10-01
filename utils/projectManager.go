@@ -25,7 +25,7 @@ func GetRFC3339Time(refTime time.Time) string {
 	return refTime.UTC().Local().Format(time.RFC3339)
 }
 
-func GetLabsLocation() string {
+func GetRootDirectory() string {
 	labsLocation := viper.GetString("labs_location")
 	if labsLocation == "DEFAULT" {
 		userHomeDir, err := os.UserHomeDir()
@@ -37,32 +37,54 @@ func GetLabsLocation() string {
 	return labsLocation
 }
 
-func GetSubjects() []string {
-
-	subjectsDirs, err := os.ReadDir(GetLabsLocation())
+// to do sa modific numele pentru functie
+func GetSubjects(path string) []string {
+	subjectsDirs, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	subjects := make([]string, 0)
 	for _, subjectDir := range subjectsDirs {
-		subjects = append(subjects, subjectDir.Name())
+		if subjectDir.Name() != ".git" {
+			subjects = append(subjects, subjectDir.Name())
+		}
 	}
 
 	return subjects
 }
 
-func GetProjectsMetadata(subject string) []FrontmatterMetaDataType {
-	projectsMetadataList := make([]FrontmatterMetaDataType, 0)
-	DirCrawler(GetLabsLocation()+"/"+subject, func(path string, file os.DirEntry) {
-		if file.Name() == "README.md" {
-			content, err := os.ReadFile(path + "/README.md")
-			if err != nil {
-				log.Fatal(err)
-			}
-			metadata, _ := ParseMdString(string(content))
-			projectsMetadataList = append(projectsMetadataList, metadata)
+func GetRemotes() []string {
+	rootDirContents, err := os.ReadDir(GetRootDirectory())
+	if err != nil {
+		log.Fatal(err)
+	}
+	remotes := make([]string, 0)
+
+	for _, dir := range rootDirContents {
+		if dir.Name() != ".git" {
+			remotes = append(remotes, dir.Name())
 		}
-	}, func(paht string, dir os.DirEntry) {})
+	}
+	return remotes
+}
+
+func GetProjectsMetadata(path string) []FrontmatterMetaDataType {
+	rootDir := GetRootDirectory()
+	projectsMetadataList := make([]FrontmatterMetaDataType, 0)
+	if _, err := os.Stat(path); err == nil {
+		DirCrawler(path, func(path string, file os.DirEntry) {
+			if file.Name() == "README.md" {
+				content, err := os.ReadFile(path + "/README.md")
+				if err != nil {
+					log.Fatal(err)
+				}
+				metadata, _ := ParseMdString(string(content))
+				metadata.Remote = path[len(rootDir)+1:]
+				metadata.Remote = metadata.Remote[:strings.Index(metadata.Remote, "/")]
+				projectsMetadataList = append(projectsMetadataList, metadata)
+			}
+		}, func(paht string, dir os.DirEntry) {})
+	}
 	return projectsMetadataList
 }
 
@@ -104,7 +126,7 @@ func GetProjectData(path string) types.Lab {
 
 func CreateProject(metadata ProjectMetadataType) {
 	projectDirectoryName := fmt.Sprintf("%s-%d-%s", strings.ReplaceAll(metadata.Title, " ", "_"), metadata.UniYearAndSemester, GetPrettyDate(*metadata.Date))
-	projectPath := filepath.Join(GetLabsLocation(), metadata.Subject, projectDirectoryName)
+	projectPath := filepath.Join(GetRootDirectory(), metadata.Subject, projectDirectoryName)
 	// fmt.Println("Proiectul va fi creat la aceasta locatie: " + projectPath)
 	if _, err := os.Stat(projectPath); err == nil {
 		fmt.Println("Acest proiect deja exista, daca alegi sa continui atunci toate datele despre acest proiect vor fi pierdute. Continui ? (y/n)")
@@ -206,7 +228,7 @@ func createGitRepoIfNotExists(path string) {
 }
 
 func commitNewFilesToGitRepo() {
-	repoPath := GetLabsLocation()
+	repoPath := GetRootDirectory()
 	createGitRepoIfNotExists(repoPath)
 	repo, err := git.PlainOpen(repoPath)
 	if err != nil {

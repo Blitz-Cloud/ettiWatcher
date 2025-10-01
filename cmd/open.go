@@ -40,15 +40,15 @@ to quickly create a Cobra application.`,
 		gitUrlSplit := strings.Split(gitURL, "/")
 		spew.Dump(gitUrlSplit)
 		repoName := gitUrlSplit[len(gitUrlSplit)-3] + "_" + gitUrlSplit[len(gitUrlSplit)-2]
-		if _, err := os.Stat(filepath.Join(utils.GetLabsLocation(), repoName)); os.IsNotExist(err) {
-			os.MkdirAll(filepath.Join(utils.GetLabsLocation(), repoName), 0766)
+		if _, err := os.Stat(filepath.Join(utils.GetRootDirectory(), repoName)); os.IsNotExist(err) {
+			os.MkdirAll(filepath.Join(utils.GetRootDirectory(), repoName), 0766)
 		}
 
-		utils.CloneRepo(filepath.Join(utils.GetLabsLocation(), repoName), gitURL)
+		utils.CloneRepo(filepath.Join(utils.GetRootDirectory(), repoName), gitURL)
 
 		editor := viper.GetString("preferred_editor")
-		fmt.Println(filepath.Join(utils.GetLabsLocation(), repoName, lab))
-		execEditor := exec.Command(editor, filepath.Join(utils.GetLabsLocation(), repoName, lab))
+		fmt.Println(filepath.Join(utils.GetRootDirectory(), repoName, lab))
+		execEditor := exec.Command(editor, filepath.Join(utils.GetRootDirectory(), repoName, lab))
 		err := execEditor.Start()
 		if err != nil {
 			log.Fatal(err)

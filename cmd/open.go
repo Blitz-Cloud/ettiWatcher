@@ -4,6 +4,7 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -46,6 +47,7 @@ to quickly create a Cobra application.`,
 		utils.CloneRepo(filepath.Join(utils.GetLabsLocation(), repoName), gitURL)
 
 		editor := viper.GetString("preferred_editor")
+		fmt.Println(filepath.Join(utils.GetLabsLocation(), repoName, lab))
 		execEditor := exec.Command(editor, filepath.Join(utils.GetLabsLocation(), repoName, lab))
 		err := execEditor.Start()
 		if err != nil {

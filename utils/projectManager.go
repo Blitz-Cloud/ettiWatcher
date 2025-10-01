@@ -102,29 +102,8 @@ func GetProjectData(path string) types.Lab {
 	return data
 }
 
-// func CreateDirectory(projectName, subject, projectType string) string {
-// 	// ar trebui sa fie capabil sa verifice daca exista deja proiectul daca da sa iasa o erroare
-// 	uniYear := viper.GetInt("uni_year")
-// 	uniSemester := viper.GetInt("semester")
-// 	var path string
-// 	projectDirectoryName := fmt.Sprintf("%s-%d-%s", projectName, uniYear*10+uniSemester, GetPrettyDate(time.Now()))
-
-// 	if projectType == "lab" {
-// 		path = fmt.Sprintf("%s/%s/%s", GetLabsLocation()+"/labs", subject, projectDirectoryName)
-// 	} else if projectType == "blog" {
-// 		path = fmt.Sprintf("%s/%s/%s", GetLabsLocation(), "blog", projectDirectoryName)
-// 	}
-
-// 	err := os.MkdirAll(path, 0766)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	return path
-
-// }
-
 func CreateProject(metadata ProjectMetadataType) {
-	projectDirectoryName := fmt.Sprintf("%s-%d-%s", strings.ReplaceAll(metadata.Title, " ", "_"), metadata.UniYearAndSemester, GetPrettyDate(time.Now()))
+	projectDirectoryName := fmt.Sprintf("%s-%d-%s", strings.ReplaceAll(metadata.Title, " ", "_"), metadata.UniYearAndSemester, GetPrettyDate(*metadata.Date))
 	projectPath := filepath.Join(GetLabsLocation(), metadata.Subject, projectDirectoryName)
 	// fmt.Println("Proiectul va fi creat la aceasta locatie: " + projectPath)
 	if _, err := os.Stat(projectPath); err == nil {
@@ -158,7 +137,7 @@ func CreateProject(metadata ProjectMetadataType) {
 		cmakeFile := ""
 		mainFile := ""
 		extension := ""
-		readmeFile := fmt.Sprintf(templates.MDTemplate, metadata.Title, GetRFC3339Time(time.Now()), metadata.Subject, "", metadata.UniYearAndSemester)
+		readmeFile := fmt.Sprintf(templates.MDTemplate, metadata.Title, GetRFC3339Time(*metadata.Date), metadata.Subject, "", metadata.UniYearAndSemester)
 		projectName := strings.ReplaceAll(metadata.Title, " ", "_")
 		switch metadata.Lang {
 		case "c":
@@ -260,3 +239,24 @@ func commitNewFilesToGitRepo() {
 }
 
 func addPathToRootGitIgnore(path string) {}
+
+// func CreateDirectory(projectName, subject, projectType string) string {
+// 	// ar trebui sa fie capabil sa verifice daca exista deja proiectul daca da sa iasa o erroare
+// 	uniYear := viper.GetInt("uni_year")
+// 	uniSemester := viper.GetInt("semester")
+// 	var path string
+// 	projectDirectoryName := fmt.Sprintf("%s-%d-%s", projectName, uniYear*10+uniSemester, GetPrettyDate(time.Now()))
+
+// 	if projectType == "lab" {
+// 		path = fmt.Sprintf("%s/%s/%s", GetLabsLocation()+"/labs", subject, projectDirectoryName)
+// 	} else if projectType == "blog" {
+// 		path = fmt.Sprintf("%s/%s/%s", GetLabsLocation(), "blog", projectDirectoryName)
+// 	}
+
+// 	err := os.MkdirAll(path, 0766)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return path
+
+// }

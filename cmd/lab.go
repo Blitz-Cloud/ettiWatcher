@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/spf13/cobra"
@@ -52,11 +53,13 @@ var labCmd = &cobra.Command{
 		if subject == "" {
 			subject = viper.GetString("subject")
 		}
+		date := time.Now()
 		newProject := utils.ProjectMetadataType{
 			FrontmatterMetaDataType: utils.FrontmatterMetaDataType{
 				Title:              projectName,
 				UniYearAndSemester: uniYearAndSemester,
 				Subject:            subject,
+				Date:               &date,
 			},
 			Lang:       projectLang,
 			DirOnly:    createDirOnly,

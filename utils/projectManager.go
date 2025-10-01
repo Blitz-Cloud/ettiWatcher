@@ -11,8 +11,6 @@ import (
 
 	"github.com/Blitz-Cloud/ettiHelper/types"
 	"github.com/blitz-cloud/ettiWatcher/templates"
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/spf13/viper"
 )
 
@@ -126,7 +124,7 @@ func GetProjectData(path string) types.Lab {
 
 func CreateProject(metadata ProjectMetadataType) {
 	projectDirectoryName := fmt.Sprintf("%s-%d-%s", strings.ReplaceAll(metadata.Title, " ", "_"), metadata.UniYearAndSemester, GetPrettyDate(*metadata.Date))
-	projectPath := filepath.Join(GetRootDirectory(), metadata.Subject, projectDirectoryName)
+	projectPath := filepath.Join(GetRootDirectory(), "local", metadata.Subject, projectDirectoryName)
 	// fmt.Println("Proiectul va fi creat la aceasta locatie: " + projectPath)
 	if _, err := os.Stat(projectPath); err == nil {
 		fmt.Println("Acest proiect deja exista, daca alegi sa continui atunci toate datele despre acest proiect vor fi pierdute. Continui ? (y/n)")
@@ -216,51 +214,6 @@ func CreateProject(metadata ProjectMetadataType) {
 	}
 
 }
-
-func createGitRepoIfNotExists(path string) {
-	if _, err := os.Stat(filepath.Join(path, ".git")); os.IsNotExist(err) {
-		_, err := git.PlainInit(path, false)
-		if err != nil {
-			log.Fatalf("failed to initialize git repository: %v", err)
-		}
-	}
-
-}
-
-func commitNewFilesToGitRepo() {
-	repoPath := GetRootDirectory()
-	createGitRepoIfNotExists(repoPath)
-	repo, err := git.PlainOpen(repoPath)
-	if err != nil {
-		log.Fatalf("failed to open repository: %v", err)
-	}
-
-	// Get the working tree
-	worktree, err := repo.Worktree()
-	if err != nil {
-		log.Fatalf("failed to get worktree: %v", err)
-	}
-	_, err = worktree.Add(".")
-	if err != nil {
-		log.Fatalf("failed to add all files: %v", err)
-	}
-	// fmt.Println("All changes added to staging area.")
-	// fmt.Println("Performing 'git commit -m \"Added new files\"'...")
-	_, err = worktree.Commit("Added new lab", &git.CommitOptions{
-		Author: &object.Signature{
-			Name:  viper.GetString("git_name"),
-			Email: viper.GetString("git_email"),
-			When:  time.Now(),
-		},
-	})
-	if err != nil {
-		log.Fatalf("failed to commit changes: %v", err)
-	}
-
-	// fmt.Printf("Successfully committed with hash: %s\n", commitHash)
-}
-
-func addPathToRootGitIgnore(path string) {}
 
 // func CreateDirectory(projectName, subject, projectType string) string {
 // 	// ar trebui sa fie capabil sa verifice daca exista deja proiectul daca da sa iasa o erroare

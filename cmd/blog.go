@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/spf13/cobra"
@@ -31,11 +32,13 @@ to quickly create a Cobra application.`,
 		uniYearAndSemester := viper.GetInt("uni_year")*10 + viper.GetInt("semester")
 		projectName := args[0]
 
+		date := time.Now()
 		newProject := utils.ProjectMetadataType{
 			FrontmatterMetaDataType: utils.FrontmatterMetaDataType{
 				Title:              projectName,
 				UniYearAndSemester: uniYearAndSemester,
 				Subject:            "blog",
+				Date:               &date,
 			},
 			Lang:       "",
 			DirOnly:    false,

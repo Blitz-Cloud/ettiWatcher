@@ -9,8 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Blitz-Cloud/ettiHelper/types"
+	// "github.com/Blitz-Cloud/ettiHelper/types"
 	"github.com/blitz-cloud/ettiWatcher/templates"
+	"github.com/blitz-cloud/ettiWatcher/types"
 	"github.com/spf13/viper"
 )
 
@@ -66,9 +67,9 @@ func GetRemotes() []string {
 	return remotes
 }
 
-func GetProjectsMetadata(path string) []FrontmatterMetaDataType {
+func GetProjectsMetadata(path string) []types.FrontmatterMetaDataType {
 	rootDir := GetRootDirectory()
-	projectsMetadataList := make([]FrontmatterMetaDataType, 0)
+	projectsMetadataList := make([]types.FrontmatterMetaDataType, 0)
 	if _, err := os.Stat(path); err == nil {
 		DirCrawler(path, func(path string, file os.DirEntry) {
 			if file.Name() == "README.md" {
@@ -86,43 +87,43 @@ func GetProjectsMetadata(path string) []FrontmatterMetaDataType {
 	return projectsMetadataList
 }
 
-func GetProjectData(path string) types.Lab {
-	readme, err := os.ReadFile(filepath.Join(path, "README.md"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	programFile := []byte("")
-	if _, err := os.Stat(filepath.Join(path, "main.cpp")); err == nil {
-		programFile, err = os.ReadFile(filepath.Join(path, "main.cpp"))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
+// func GetProjectData(path string) types.Lab {
+// 	readme, err := os.ReadFile(filepath.Join(path, "README.md"))
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	programFile := []byte("")
+// 	if _, err := os.Stat(filepath.Join(path, "main.cpp")); err == nil {
+// 		programFile, err = os.ReadFile(filepath.Join(path, "main.cpp"))
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 	}
 
-	if _, err := os.Stat(filepath.Join(path, "main.c")); err == nil {
-		programFile, err = os.ReadFile(filepath.Join(path, "main.c"))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
+// 	if _, err := os.Stat(filepath.Join(path, "main.c")); err == nil {
+// 		programFile, err = os.ReadFile(filepath.Join(path, "main.c"))
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 	}
 
-	metadata, content := ParseMdString(string(readme))
-	if metadata.Subject != "blog" {
-		content = fmt.Sprintf("%s\n\n Codul sursa:\n```cpp\n%s\n```", content, string(programFile))
-	}
-	data := types.Lab{
-		Title:              metadata.Title,
-		Description:        metadata.Description,
-		Date:               metadata.Date,
-		Tags:               "",
-		Subject:            metadata.Subject,
-		UniYearAndSemester: uint(metadata.UniYearAndSemester),
-		Content:            content,
-	}
-	return data
-}
+// 	metadata, content := ParseMdString(string(readme))
+// 	if metadata.Subject != "blog" {
+// 		content = fmt.Sprintf("%s\n\n Codul sursa:\n```cpp\n%s\n```", content, string(programFile))
+// 	}
+// 	data := types.Lab{
+// 		Title:              metadata.Title,
+// 		Description:        metadata.Description,
+// 		Date:               metadata.Date,
+// 		Tags:               "",
+// 		Subject:            metadata.Subject,
+// 		UniYearAndSemester: uint(metadata.UniYearAndSemester),
+// 		Content:            content,
+// 	}
+// 	return data
+// }
 
-func CreateProject(metadata ProjectMetadataType) {
+func CreateProject(metadata types.ProjectMetadataType) {
 	projectDirectoryName := fmt.Sprintf("%s-%d-%s", strings.ReplaceAll(metadata.Title, " ", "_"), metadata.UniYearAndSemester, GetPrettyDate(*metadata.Date))
 	projectPath := filepath.Join(GetRootDirectory(), "local", metadata.Subject, projectDirectoryName)
 	// fmt.Println("Proiectul va fi creat la aceasta locatie: " + projectPath)

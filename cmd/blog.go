@@ -1,12 +1,10 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/blitz-cloud/ettiWatcher/types"
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -33,8 +31,8 @@ to quickly create a Cobra application.`,
 		projectName := args[0]
 
 		date := time.Now()
-		newProject := utils.ProjectMetadataType{
-			FrontmatterMetaDataType: utils.FrontmatterMetaDataType{
+		newProject := types.ProjectMetadataType{
+			FrontmatterMetaDataType: types.FrontmatterMetaDataType{
 				Title:              projectName,
 				UniYearAndSemester: uniYearAndSemester,
 				Subject:            "blog",

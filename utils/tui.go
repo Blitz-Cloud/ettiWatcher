@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/blitz-cloud/ettiWatcher/types"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -14,7 +15,7 @@ import (
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type Item struct {
-	Metadata FrontmatterMetaDataType
+	Metadata types.FrontmatterMetaDataType
 }
 
 func (i Item) Title() string       { return i.Metadata.Title }

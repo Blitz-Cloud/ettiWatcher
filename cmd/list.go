@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/blitz-cloud/ettiWatcher/types"
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/spf13/cobra"
@@ -30,7 +31,7 @@ var listCmd = &cobra.Command{
 		showAllSubjectsF, _ := cmd.Flags().GetBool("all")
 		openTui, _ := cmd.Flags().GetBool("open")
 		remotes := utils.GetRemotes()
-		projectsMetadata := make([]utils.FrontmatterMetaDataType, 0)
+		projectsMetadata := make([]types.FrontmatterMetaDataType, 0)
 		if len(remoteF) != 0 && showAllSubjectsF {
 			log.Fatal("Este imposibil sa folosesti --all si --remote in acelasi timp.\n")
 		}

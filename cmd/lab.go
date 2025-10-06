@@ -8,6 +8,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/blitz-cloud/ettiWatcher/types"
 	"github.com/blitz-cloud/ettiWatcher/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -54,8 +55,8 @@ var labCmd = &cobra.Command{
 			subject = viper.GetString("subject")
 		}
 		date := time.Now()
-		newProject := utils.ProjectMetadataType{
-			FrontmatterMetaDataType: utils.FrontmatterMetaDataType{
+		newProject := types.ProjectMetadataType{
+			FrontmatterMetaDataType: types.FrontmatterMetaDataType{
 				Title:              projectName,
 				UniYearAndSemester: uniYearAndSemester,
 				Subject:            subject,
